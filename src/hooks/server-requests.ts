@@ -1,58 +1,77 @@
-import { Message } from '../types/message';
-import { mockUsers } from '../assets/mockUsers'; // todo: remove this line after server implementation
+import { Message } from "../types/message";
+import { User } from "../types/user";
+import { mockUsers } from "../assets/mockUsers"; // todo: remove this line after server implementation
 
-const endpoint = '../assets/'; // todo: add endpoint (server) address (starting with http://)
-
+const endpoint = "../assets/"; // todo: add endpoint (server) address (starting with http://)
 
 /**
  * GET Request to get the list of messages
  **/
-export async function getMessages() {
-  // todo: replace this with fetch to get the messages from the server
-  const { mockMessages } = await import(`${endpoint}/mockMessages`);
+export async function getMessages(): Promise<Message[]> {
+	// todo: replace this with fetch to get the messages from the server
+	// const { mockMessages } = await import(`${endpoint}/mockMessages`);
+	const response = await fetch("http://localhost:3003/", {
+		mode: "cors",
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+		},
+	});
+	const { mockMessagesWithNames } = await response.json();
 
-  // todo: this should be implemented in the server. Chat Messages should already have the authors' names.
-  // todo: remove this mapping when getting the data from the server
-  const mockMessagesWithNames = mockMessages.map((message: Message) => {
-    const author = mockUsers.find(user => user.id === message.authorId);
-    const authorName = author && author.name;
-    return { ...message, authorName };
-  });
+	// todo: this should be implemented in the server. Chat Messages should already have the authors' names.
+	// todo: remove this mapping when getting the data from the server
+	// const mockMessagesWithNames = mockMessages.map((message: Message) => {
+	// 	const author = mockUsers.find((user) => user.id === message.authorId);
+	// 	const authorName = author && author.name;
+	// 	return { ...message, authorName };
+	// });
 
-  return mockMessagesWithNames;
+	return mockMessagesWithNames;
 }
 
 /**
  * GET request to get the full list of users - id + name
  **/
-export async function getUsers() {
-  // todo: replace this with fetch to get the user list from the server
-  const { mockUsers } = await import(`${endpoint}/mockUsers`);
-  return mockUsers;
+export async function getUsers(): Promise<User[]> {
+	// todo: replace this with fetch to get the user list from the server
+	// const { mockUsers } = await import(`${endpoint}/mockUsers`);
+	const response = await fetch("http://localhost:3003/", {
+		mode: "cors",
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+		},
+	});
+	const { usersList } = await response.json();
+	return usersList;
 }
-
 
 /**
  * GET request to get the full details of a user
  **/
 export async function getUserDetails(userId: number) {
-  // todo: replace this with fetch to get the user details from the server.
-  //  For mocking example, we're calling an external JSON service.
-  //  You can use mockUserDetails.ts for the list of user details in the server.
-  const res = await fetch(`https://jsonplaceholder.typicode.com/users?id=${userId}`);
-  return (await res.json())[0];
+	// todo: replace this with fetch to get the user details from the server.
+	//  For mocking example, we're calling an external JSON service.
+	//  You can use mockUserDetails.ts for the list of user details in the server.
+	const res = await fetch(
+		`https://jsonplaceholder.typicode.com/users?id=${userId}`
+	);
+	return (await res.json())[0];
 }
 
 /**
  * POST request to add a message. The message contains: id, body, timestamp, authorId
  **/
 export async function addNewMessage(message: Message) {
-  // todo: implement sending a new message to the server
+	// todo: implement sending a new message to the server
 }
 
 /**
  * POST request to change the user's like of a message
  **/
-export async function changeMessageLikes(messageId: number, userId: number, like: boolean) {
-  // todo: implement sending a rquest to change the like of a message by the user
+export async function changeMessageLikes(
+	messageId: number,
+	userId: number,
+	like: boolean
+) {
+	// todo: implement sending a rquest to change the like of a message by the user
 }
