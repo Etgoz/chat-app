@@ -2,7 +2,7 @@ import { Message } from "../types/message";
 import { User } from "../types/user";
 import { mockUsers } from "../assets/mockUsers"; // todo: remove this line after server implementation
 
-const endpoint = "../assets/"; // todo: add endpoint (server) address (starting with http://)
+const endpoint = "http://localhost:3003"; // todo: add endpoint (server) address (starting with http://)
 
 /**
  * GET Request to get the list of messages
@@ -10,7 +10,7 @@ const endpoint = "../assets/"; // todo: add endpoint (server) address (starting 
 export async function getMessages(): Promise<Message[]> {
 	// todo: replace this with fetch to get the messages from the server
 	// const { mockMessages } = await import(`${endpoint}/mockMessages`);
-	const response = await fetch("http://localhost:3003/", {
+	const response = await fetch(`${endpoint}/mockMessages`, {
 		mode: "cors",
 		headers: {
 			"Access-Control-Allow-Origin": "*",
@@ -35,7 +35,7 @@ export async function getMessages(): Promise<Message[]> {
 export async function getUsers(): Promise<User[]> {
 	// todo: replace this with fetch to get the user list from the server
 	// const { mockUsers } = await import(`${endpoint}/mockUsers`);
-	const response = await fetch("http://localhost:3003/", {
+	const response = await fetch(`${endpoint}/mockUsers`, {
 		mode: "cors",
 		headers: {
 			"Access-Control-Allow-Origin": "*",
@@ -52,10 +52,13 @@ export async function getUserDetails(userId: number) {
 	// todo: replace this with fetch to get the user details from the server.
 	//  For mocking example, we're calling an external JSON service.
 	//  You can use mockUserDetails.ts for the list of user details in the server.
-	const res = await fetch(
-		`https://jsonplaceholder.typicode.com/users?id=${userId}`
-	);
-	return (await res.json())[0];
+	const res = await fetch(`${endpoint}/users?id=${userId}`, {
+		mode: "cors",
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+		},
+	});
+	return await res.json();
 }
 
 /**
@@ -63,6 +66,17 @@ export async function getUserDetails(userId: number) {
  **/
 export async function addNewMessage(message: Message) {
 	// todo: implement sending a new message to the server
+	const response = await fetch(`${endpoint}/addMessage`, {
+		mode: "cors",
+		method: "POST",
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(message),
+	});
+	const status = await response.json();
+	console.log(status.message);
 }
 
 /**
@@ -74,4 +88,19 @@ export async function changeMessageLikes(
 	like: boolean
 ) {
 	// todo: implement sending a rquest to change the like of a message by the user
+	const response = await fetch(`${endpoint}/changeLikes`, {
+		mode: "cors",
+		method: "POST",
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			messageId,
+			userId,
+			like,
+		}),
+	});
+	const confirm = await response.json();
+	return confirm;
 }
