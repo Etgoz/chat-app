@@ -66,17 +66,26 @@ export async function getUserDetails(userId: number) {
  **/
 export async function addNewMessage(message: Message) {
 	// todo: implement sending a new message to the server
+	const body = message ? JSON.stringify(message) : null;
 	const response = await fetch(`${endpoint}/addMessage`, {
-		mode: "cors",
 		method: "POST",
+		mode: "cors",
 		headers: {
 			"Access-Control-Allow-Origin": "*",
+			Accept: "application/json",
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(message),
+		body,
 	});
-	const status = await response.json();
-	console.log(status.message);
+	const messageResponse = await response.json();
+
+	if (messageResponse.status === 200) {
+		const okMessage = {
+			...messageResponse.body,
+			status: "ok",
+		};
+		return okMessage;
+	}
 }
 
 /**
